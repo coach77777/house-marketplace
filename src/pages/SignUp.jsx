@@ -5,7 +5,7 @@ import visibilityIcon from '../assets/svg/visibilityIcon.svg'
 
 function SignUp() {
   const [showPassword, setShowPassword]= useState (false)
-  const [formData, setFormData]= useState ({ name: ' ', email: ' ' , password: ' ',
+  const [formData, setFormData]= useState ({ name: '', email: '' , password: '',
  })
   const {name, email, password} = formData
 
@@ -21,7 +21,7 @@ function SignUp() {
     <>
       <div className='pageContainer'>
         <header>
-          <p className='pageHeader'>Welcome Back!</p>
+          <p className='pageHeader'>Please Sign Up.</p>
         </header>
 
         <form>

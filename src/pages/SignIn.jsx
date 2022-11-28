@@ -5,7 +5,7 @@ import visibilityIcon from '../assets/svg/visibilityIcon.svg'
 
 function SignIn() {
   const [showPassword, setShowPassword]= useState (false)
-  const [formData, setFormData]= useState ({ email: ' ' , password: ' ' })
+  const [formData, setFormData]= useState ({ email: '' , password: '' })
   const {email, password} = formData
 
   const navigate = useNavigate()
@@ -36,11 +36,11 @@ function SignIn() {
 
            <div className='passwordInputDiv'>
             <input
-              type={showPassword ? 'text' : 'password' }
+              type={showPassword ? 'text':'password'}
               className= 'passwordInput'
               placeholder= 'Password'
               id='password'
-              value= { password }
+              value= {password}
               onChange={onChange}
             />
             <img
