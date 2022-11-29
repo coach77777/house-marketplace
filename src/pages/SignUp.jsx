@@ -1,6 +1,8 @@
 import {useState} from 'react'
+import { toast, ToastContainer } from 'react-toastify'
 import {Link, useNavigate} from 'react-router-dom'
 import { doc, setDoc, serverTimestamp} from "firebase/firestore"
+import OAuth from '../components/OAuth'
 import {getAuth, createUserWithEmailAndPassword, updateProfile} from 'firebase/auth'
 import { db } from '../firebase.config'
 import { ReactComponent as ArrowRightIcon} from '../assets/svg/keyboardArrowRightIcon.svg'
@@ -43,7 +45,7 @@ await setDoc(doc (db, 'users', user.uid), formDataCopy)
       navigate('/')
 
     } catch (error) {
-     console.log(error)
+     toast.error('Something went wrong. Try Again.')
       
     }
   }
@@ -103,7 +105,9 @@ await setDoc(doc (db, 'users', user.uid), formDataCopy)
        </div>
         </form>
 
-        {/*Google oAuth  */}
+       <OAuth />
+
+
         <Link to ='/sign-in' className='registerLink'>
           Sign In Instead
         </Link>
