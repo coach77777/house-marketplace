@@ -3,7 +3,7 @@ import {getFirestore} from "firebase/firestore"
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDJCyEWz6JE5qtonk7UrAGdnlDk04V-y9Y",
+  apiKey: "AIzaSyA9OTmMwPuavYGgm3CaifzwcStjSMSQdfU",
   authDomain: "house-marketplace-app-9dce5.firebaseapp.com",
   projectId: "house-marketplace-app-9dce5",
   storageBucket: "house-marketplace-app-9dce5.appspot.com",
@@ -12,5 +12,5 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 export const db = getFirestore()

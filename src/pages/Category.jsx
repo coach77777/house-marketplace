@@ -14,7 +14,6 @@ import { toast } from 'react-toastify'
 import Spinner from '../components/Spinner'
 import ListingItem from '../components/ListingItem'
 
-
 function Category() {
   const [listings, setListings] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -71,23 +70,19 @@ function Category() {
         <Spinner />
       ) : listings && listings.length > 0 ? (
         <>
-        <main>
-          <ul className="categoryListings">
-            {listings.map((listing) => (
-
-              <h3><ListingItem listing={listing.data}  id={listing.id} key={listing.id}/></h3>
-
-            ))}
-
-
-
-
-
-          </ul>
-        </main>
-        
-        
-        
+          <main>
+            <ul className='categoryListings'>
+              {listings.map((listing) => (
+                <h3>
+                  <ListingItem
+                    listing={listing.data}
+                    id={listing.id}
+                    key={listing.id}
+                  />
+                </h3>
+              ))}
+            </ul>
+          </main>
         </>
       ) : (
         <p> No listings for {params.categoryName}</p>

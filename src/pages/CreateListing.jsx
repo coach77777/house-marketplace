@@ -6,13 +6,15 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from 'firebase/storage'
-import {db} from '../firebase.config'
+import {addDoc, collection, serverTimestamp} from 'firebase/firestore'
+import { db } from '../firebase.config'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import {v4 as uuidv4} from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import Spinner from '../components/Spinner'
 
 function CreateListing() {
+  // eslint-disable-next-line
   const [geolocationEnabled, setGeolocationEnabled] = useState(true)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -50,6 +52,8 @@ function CreateListing() {
   const auth = getAuth()
   const navigate = useNavigate()
   const isMounted = useRef(true)
+
+
 
   useEffect(() => {
     if (isMounted) {
@@ -89,8 +93,10 @@ function CreateListing() {
 
     if (geolocationEnabled) {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GEOCODE_API_KEY}`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_TEST}`
       )
+
+   
 
       const data = await response.json()
 
@@ -101,69 +107,95 @@ function CreateListing() {
         data.status === 'ZERO_RESULTS'
           ? undefined
           : data.results[0]?.formatted_address
-          if(location === undefined || location.includes('undefined')){
-            setLoading( false)
-            toast.error('Please enter correct address')
-            return
-          }
+
+//console.log(location)
+
+
+
+      if (location === undefined || location.includes('undefined')) {
+        setLoading(false)
+        toast.error('Please enter correct address')
+        return
+      }
     } else {
       geolocation.lat = latitude
       geolocation.lng = longitude
-      location = address
+     // location = address
     }
 
     //Store Images in Firebase
 
     const storeImage = async (image) => {
       return new Promise((resolve, reject) => {
-const storage = getStorage()
-  const fileName = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`
+        const storage = getStorage()
+        const fileName = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`
 
-  const storageRef = ref(storage, 'images/' + fileName)
+        const storageRef = ref(storage, 'images/' + fileName)
 
-  const uploadTask = uploadBytesResumable(storageRef, image)
+        const uploadTask = uploadBytesResumable(storageRef, image)
 
-  // Listen for state changes, errors, and completion of the upload.
-uploadTask.on('state_changed',
-(snapshot) => {
+        // Listen for state changes, errors, and completion of the upload.
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            console.log('Upload is ' + progress + '% done')
 
-  const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  console.log('Upload is ' + progress + '% done');
+            switch (snapshot.state) {
+              case 'paused':
+                console.log('Upload is paused')
+                break
+              case 'running':
+                console.log('Upload is running')
+                break
+                default:
+                break
+            }
+          },
+          (error) => {
+            reject(error)
+          },
 
-  switch (snapshot.state) {
-    case 'paused':
-      console.log('Upload is paused');
-      break;
-    case 'running':
-      console.log('Upload is running')
-      break;
-  }
-}, 
-(error) => {
-  reject(error)
-},
+          () => {
+            // Upload completed successfully, now we can get the download URL
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              resolve(downloadURL)
+            })
+          }
+        )
+      })
+    }
 
-() => {
-  // Upload completed successfully, now we can get the download URL
-  getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-    resolve(downloadURL)
-  })
-}
-)
-})
- }
+    const imgUrls = await Promise.all(
+      [...images].map((image) => storeImage(image))
+    ).catch(() => {
+      setLoading(false)
+      toast.error('Images not uploaded')
+      return
+    })
 
- const imgUrls = await Promise.all(
-  [...images].map((image) => storeImage(image))
-).catch(() => {
-  setLoading(false)
-  toast.error('Images not uploaded')
-  return
-})
+   const formDataCopy = {
+    ...formData,
+    imgUrls,
+    geolocation ,
+    timestamp: serverTimestamp()
+   }
 
-console.log(imgUrls)
+formDataCopy.location = address
+
+   delete formDataCopy.images
+   delete formDataCopy.address
+
+  // location && (formDataCopy.location = location)
+   !formDataCopy.offer && delete formDataCopy.discountedPrice
+
+   const docRef = await addDoc(collection(db, 'listings'), formDataCopy)
 
     setLoading(false)
+
+    toast.success('Listing saved') 
+    navigate(`/category/${formDataCopy.type}/${docRef.id}`)
   }
 
   const onMutate = (e) => {

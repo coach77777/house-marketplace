@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+
 import {
   collection,
   getDocs,
@@ -19,7 +19,7 @@ function Offers() {
   const [listings, setListings] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  const params = useParams()
+
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -73,10 +73,11 @@ function Offers() {
           <ul className="categoryListings">
             {listings.map((listing) => (
 
-              <h3><ListingItem listing={listing.data}  id={listing.id} key={listing.id}/></h3>
+              <ListingItem listing={listing.data}  id={listing.id} key={listing.id} />
             ))}
           </ul>
         </main>
+        
         </>
       ) : (
         <p> There are no current Offers.</p>
