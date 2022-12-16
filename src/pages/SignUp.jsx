@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import { toast, ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify'
 import {Link, useNavigate} from 'react-router-dom'
 import { doc, setDoc, serverTimestamp} from "firebase/firestore"
 import OAuth from '../components/OAuth'
